@@ -50,10 +50,10 @@ PACKAGE_SOC_VALUE="all"
 # Set the default packaged kernel download repository
 KERNEL_REPO_URL_VALUE="breakings/OpenWrt"
 # Set kernel tag: kernel_stable, kernel_rk3588, kernel_rk35xx
-KERNEL_TAGS=("stable" "rk3588" "rk35xx")
+KERNEL_TAGS="rk35xx"
 STABLE_KERNEL=("6.1.y" "6.6.y")
 RK3588_KERNEL=("5.10.y")
-RK35XX_KERNEL=("5.10.y")
+RK35XX_KERNEL=("6.1.y")
 KERNEL_AUTO_LATEST_VALUE="true"
 
 # Set the working directory under /opt
@@ -219,16 +219,7 @@ init_var() {
     PACKAGE_OPENWRT=($(echo "${PACKAGE_OPENWRT[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
     # Reset required kernel tags
-    KERNEL_TAGS_TMP=()
-    for kt in "${PACKAGE_OPENWRT[@]}"; do
-        if [[ " ${PACKAGE_OPENWRT_RK3588[@]} " =~ " ${kt} " ]]; then
-            KERNEL_TAGS_TMP+=("rk3588")
-        elif [[ " ${PACKAGE_OPENWRT_RK35XX[@]} " =~ " ${kt} " ]]; then
-            KERNEL_TAGS_TMP+=("rk35xx")
-        else
-            KERNEL_TAGS_TMP+=("stable")
-        fi
-    done
+    KERNEL_TAGS_TMP="rk35xx"
     # Remove duplicate kernel tags
     KERNEL_TAGS=($(echo "${KERNEL_TAGS_TMP[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
@@ -323,15 +314,7 @@ query_kernel() {
     x="1"
     for vb in "${KERNEL_TAGS[@]}"; do
         {
-            # Select the corresponding kernel directory and list
-            if [[ "${vb}" == "rk3588" ]]; then
-                down_kernel_list=(${RK3588_KERNEL[@]})
-            elif [[ "${vb}" == "rk35xx" ]]; then
-                down_kernel_list=(${RK35XX_KERNEL[@]})
-            else
-                down_kernel_list=(${STABLE_KERNEL[@]})
-            fi
-
+            down_kernel_list=(${RK35XX_KERNEL[@]})
             # Query the name of the latest kernel version
             TMP_ARR_KERNELS=()
             i=1
@@ -360,17 +343,8 @@ query_kernel() {
                 let i++
             done
 
-            # Reset the kernel array to the latest kernel version
-            if [[ "${vb}" == "rk3588" ]]; then
-                RK3588_KERNEL=(${TMP_ARR_KERNELS[@]})
-                echo -e "${INFO} The latest version of the rk3588 kernel: [ ${RK3588_KERNEL[@]} ]"
-            elif [[ "${vb}" == "rk35xx" ]]; then
-                RK35XX_KERNEL=(${TMP_ARR_KERNELS[@]})
-                echo -e "${INFO} The latest version of the rk35xx kernel: [ ${RK35XX_KERNEL[@]} ]"
-            else
-                STABLE_KERNEL=(${TMP_ARR_KERNELS[@]})
-                echo -e "${INFO} The latest version of the stable kernel: [ ${STABLE_KERNEL[@]} ]"
-            fi
+            RK35XX_KERNEL=(${TMP_ARR_KERNELS[@]})
+            echo -e "${INFO} The latest version of the rk35xx kernel: [ ${RK35XX_KERNEL[@]} ]"
 
             let x++
         }
@@ -403,14 +377,7 @@ download_kernel() {
     x="1"
     for vb in "${KERNEL_TAGS[@]}"; do
         {
-            # Set the kernel download list
-            if [[ "${vb}" == "rk3588" ]]; then
-                down_kernel_list=(${RK3588_KERNEL[@]})
-            elif [[ "${vb}" == "rk35xx" ]]; then
-                down_kernel_list=(${RK35XX_KERNEL[@]})
-            else
-                down_kernel_list=(${STABLE_KERNEL[@]})
-            fi
+            down_kernel_list=(${RK35XX_KERNEL[@]})
 
             # Kernel storage directory
             kernel_path="kernel/${vb}"
