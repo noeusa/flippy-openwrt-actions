@@ -458,17 +458,8 @@ make_openwrt() {
     i="1"
     for PACKAGE_VAR in "${PACKAGE_OPENWRT[@]}"; do
         {
-            # Distinguish between different OpenWrt and use different kernel
-            if [[ " ${PACKAGE_OPENWRT_RK3588[@]} " =~ " ${PACKAGE_VAR} " ]]; then
-                build_kernel=(${RK3588_KERNEL[@]})
-                vb="rk3588"
-            elif [[ " ${PACKAGE_OPENWRT_RK35XX[@]} " =~ " ${PACKAGE_VAR} " ]]; then
-                build_kernel=(${RK35XX_KERNEL[@]})
-                vb="rk35xx"
-            else
-                build_kernel=(${STABLE_KERNEL[@]})
-                vb="stable"
-            fi
+            build_kernel=(${RK35XX_KERNEL[@]})
+            vb="rk35xx"
 
             k="1"
             for kernel_var in "${build_kernel[@]}"; do
